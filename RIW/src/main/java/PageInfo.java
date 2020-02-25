@@ -35,13 +35,22 @@ public class PageInfo {
         return document.title();
     }
     public String getKeywords(){
-        return document.select("meta[name=keywords]").first().attr("content");
+        //var content=document.select()
+        Elements elements =  document.select("meta[name=keywords]");
+        if(elements.size()==0){
+            return "";
+        }
+        return elements.first().attr("content");
     }
     public String getDescription(){
         return document.select("meta[name=description]").first().attr("content");
     }
     public String getRobots(){
-        return document.select("meta[name=robots]").first().attr("content");
+        Elements elements = document.select("meta[name=robots]");
+        if(elements.size()==0){
+            return "";
+        }
+        return elements.first().attr("content");
     }
     public List<String> getLinks()
     {

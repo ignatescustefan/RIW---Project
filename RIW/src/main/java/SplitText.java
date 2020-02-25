@@ -20,11 +20,15 @@ public class SplitText {
                 } else {
                     //gata cuvantul
                     //verific dictionar
-                    if(wordCount.containsKey(sb.toString())){
-                        //incrementez valoarea
-                        wordCount.put(sb.toString(),wordCount.get(sb.toString()) +1);
-                    } else {
-                        wordCount.put(sb.toString(),1);
+                    //daca trebuie stocat
+                    WordStored wordStored = new WordStored(new File("files/stopwords.txt"),new File("files/exception.txt"));
+                    if(wordStored.isStored(sb.toString())) {
+                        if (wordCount.containsKey(sb.toString())) {
+                            //incrementez valoarea
+                            wordCount.put(sb.toString(), wordCount.get(sb.toString()) + 1);
+                        } else {
+                            wordCount.put(sb.toString(), 1);
+                        }
                     }
                     //resetez cuvantul;
                     sb.setLength(0);
