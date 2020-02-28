@@ -31,9 +31,9 @@ public class WordStored {
     }
 
     public boolean isStored(String word){
-        if(exceptionList.contains(word)){
+        if(exceptionList.contains(word.toLowerCase())){
             return true;
-        } else if (!stopWordsList.contains(word)){
+        } else if (!stopWordsList.contains(word.toLowerCase())){
             //string getBaseFrom()
             return true;
         }

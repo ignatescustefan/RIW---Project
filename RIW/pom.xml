@@ -8,8 +8,12 @@
     <artifactId>RIW</artifactId>
     <version>1.0-SNAPSHOT</version>
     <dependencies>
-
-
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20190722</version>
+        </dependency>
         <dependency>
             <!-- jsoup HTML parser library @ https://jsoup.org/ -->
             <groupId>org.jsoup</groupId>
