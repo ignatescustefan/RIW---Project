@@ -10,30 +10,31 @@ public class WordStored {
     private List<String> exceptionList;
     private List<String> stopWordsList;
 
-    public WordStored(File stopFile,File exception) throws FileNotFoundException {
-        stopwordsFile=stopFile;
-        stopWordsList=new LinkedList<String>();
-        exceptionFile=exception;
-        exceptionList=new LinkedList<String>();
+    public WordStored(File stopFile, File exception) throws FileNotFoundException {
+        stopwordsFile = stopFile;
+        stopWordsList = new LinkedList<String>();
+        exceptionFile = exception;
+        exceptionList = new LinkedList<String>();
         readInputs();
     }
+
     private void readInputs() throws FileNotFoundException {
-        Scanner scanner= new Scanner(stopwordsFile);
-        while (scanner.hasNext()){
+        Scanner scanner = new Scanner(stopwordsFile);
+        while (scanner.hasNext()) {
             stopWordsList.add(scanner.next());
         }
-        scanner=new Scanner(exceptionFile);
-        while (scanner.hasNext()){
+        scanner = new Scanner(exceptionFile);
+        while (scanner.hasNext()) {
             exceptionList.add(scanner.next());
         }
         //System.out.println(stopWordsList);
         //System.out.println(exceptionList);
     }
 
-    public boolean isStored(String word){
-        if(exceptionList.contains(word.toLowerCase())){
+    public boolean isStored(String word) {
+        if (exceptionList.contains(word.toLowerCase())) {
             return true;
-        } else if (!stopWordsList.contains(word.toLowerCase())){
+        } else if (!stopWordsList.contains(word.toLowerCase())) {
             //string getBaseFrom()
             return true;
         }

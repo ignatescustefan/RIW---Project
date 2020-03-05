@@ -41,14 +41,35 @@ public class SplitText {
             e.printStackTrace();
         }
 
-        System.out.println(wordCount.get(""));
         wordCount.remove("");
         return wordCount;
     }
 
     public static JSONObject serializeHashMap(String fileName) throws IOException {
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put(fileName,splitText(fileName));
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(fileName, splitText(fileName));
         return jsonObject;
+    }
+
+    public static File writeIndexToFile(String fileName) throws IOException {
+        JSONObject jsonObject = new JSONObject(splitText(fileName));
+        //File file=new File();
+        //file.createNewFile();
+        File myObj = new File("output/" + fileName);
+        myObj.getParentFile().mkdirs();
+
+        if (myObj.createNewFile()) {
+            System.out.println("File created: " + myObj.getName());
+            FileWriter fileWriter = new FileWriter(myObj);
+            fileWriter.write(jsonObject.toString());
+            fileWriter.close();
+        } else {
+            System.out.println("File already exists.");
+            FileWriter fileWriter = new FileWriter(myObj);
+            fileWriter.write(jsonObject.toString());
+            fileWriter.close();
+            return myObj;
+        }
+        return null;
     }
 }

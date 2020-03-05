@@ -1,10 +1,7 @@
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import org.json.simple.parser.ParseException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
 
 public class MainRIW {
 
@@ -24,18 +21,23 @@ public class MainRIW {
 
     }
 
-    public static void Lab02() throws FileNotFoundException {
-        Laborator2 laborator2 = new Laborator2(new File("files/dateIntrare"));
-        laborator2.parseDirectory();
-        laborator2.processingFiles();
+    public static void Lab02() throws IOException {
+        DirectoryProcessing directoryProcessing = new DirectoryProcessing(new File("files/dateIntrare01"));
+        directoryProcessing.createDirectIndex();
+       // directoryProcessing.processingFiles();
     }
 
-    public static void main(String[] args) throws IOException {
-        //Lab01();
-        //Lab02();
-        HashMap<String, Integer> map = SplitText.splitText("files/file.txt");
+    public static void tryParser() throws IOException, ParseException {
+        ReverseIndex reverseIndex=new ReverseIndex();
+        reverseIndex.parseFile("output/files/dateIntrare01/d2/b2.idx");
+    }
 
-        System.out.println(map);
-        System.out.println(SplitText.serializeHashMap("files/file.txt").toString(2));
+    public static void main(String[] args) throws IOException, ParseException {
+        //Lab01();
+        Lab02();
+        //HashMap<String, Integer> map = SplitText.splitText("files/file.txt");
+        tryParser();
+       // System.out.println(map);
+       //SplitText.writeIndexToFile("files/file.txt");
     }
 }
