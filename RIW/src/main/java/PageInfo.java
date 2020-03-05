@@ -13,61 +13,65 @@ import java.util.List;
 public class PageInfo {
     Document document;
 
-    public PageInfo(String address)
-    {
+    public PageInfo(String address) {
         try {
-            document= Jsoup.connect(address).get();
+            document = Jsoup.connect(address).get();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
     public PageInfo(File htmlFile) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(htmlFile));
         String buff;
-        StringBuilder sb=new StringBuilder();
-        while ((buff=br.readLine())!=null){
+        StringBuilder sb = new StringBuilder();
+        while ((buff = br.readLine()) != null) {
             sb.append(buff);
         }
-        document=Jsoup.parse(sb.toString());
+        document = Jsoup.parse(sb.toString());
     }
-    public String getTitle()
-    {
+
+    public String getTitle() {
         return document.title();
     }
-    public String getKeywords(){
+
+    public String getKeywords() {
         //var content=document.select()
-        Elements elements =  document.select("meta[name=keywords]");
-        if(elements.size()==0){
+        Elements elements = document.select("meta[name=keywords]");
+        if (elements.size() == 0) {
             return "";
         }
         return elements.first().attr("content");
     }
-    public String getDescription(){
+
+    public String getDescription() {
         return document.select("meta[name=description]").first().attr("content");
     }
-    public String getRobots(){
+
+    public String getRobots() {
         Elements elements = document.select("meta[name=robots]");
-        if(elements.size()==0){
+        if (elements.size() == 0) {
             return "";
         }
         return elements.first().attr("content");
     }
-    public List<String> getLinks()
-    {
-        List<String> list=new LinkedList<String>();
-        Elements links=document.select("a");
-        for(Element e : links){
-            String link=e.attr("abs:href");
-            if(link.contains("#")) {
-                int i=link.indexOf("#");
-                list.add(link.substring(0,i));
+
+    public List<String> getLinks() {
+        List<String> list = new LinkedList<String>();
+        Elements links = document.select("a");
+        for (Element e : links) {
+            String link = e.attr("abs:href");
+            if (link.contains("#")) {
+                int i = link.indexOf("#");
+                list.add(link.substring(0, i));
             } else {
                 list.add(link);
             }
         }
         return list;
     }
-    public String getText(){
+
+    public String getText() {
         return document.body().text();
     }
 }

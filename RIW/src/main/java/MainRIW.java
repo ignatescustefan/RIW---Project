@@ -1,5 +1,3 @@
-import org.json.simple.parser.ParseException;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -22,22 +20,21 @@ public class MainRIW {
     }
 
     public static void Lab02() throws IOException {
-        DirectoryProcessing directoryProcessing = new DirectoryProcessing(new File("files/dateIntrare01"));
+        DirectoryProcessing directoryProcessing = new DirectoryProcessing(new File("files/dateIntrare"));
         directoryProcessing.createDirectIndex();
-       // directoryProcessing.processingFiles();
     }
 
-    public static void tryParser() throws IOException, ParseException {
-        ReverseIndex reverseIndex=new ReverseIndex();
-        reverseIndex.parseFile("output/files/dateIntrare01/d2/b2.idx");
+    public static void Lab03() throws IOException {
+        DirectoryProcessing directoryProcessing = new DirectoryProcessing(new File("output/files/dateIntrare"));
+        directoryProcessing.createReverseIndex();
     }
 
-    public static void main(String[] args) throws IOException, ParseException {
+
+    public static void main(String[] args) throws IOException {
         //Lab01();
+        // System.out.println(map);
+        //SplitText.writeIndexToFile("files/file.txt");
         Lab02();
-        //HashMap<String, Integer> map = SplitText.splitText("files/file.txt");
-        tryParser();
-       // System.out.println(map);
-       //SplitText.writeIndexToFile("files/file.txt");
+        Lab03();
     }
 }

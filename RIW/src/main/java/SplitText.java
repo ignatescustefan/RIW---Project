@@ -1,6 +1,3 @@
-import netscape.javascript.JSObject;
-import org.json.JSONObject;
-
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -8,6 +5,8 @@ import java.util.HashMap;
 public class SplitText {
     public static HashMap<String, Integer> splitText(String fileName) throws IOException {
         HashMap<String, Integer> wordCount = new HashMap<String, Integer>();
+
+        WordStored wordStored = new WordStored(new File("files/stopwords.txt"), new File("files/exception.txt"));
 
         try {
             //deschid fisierul
@@ -24,7 +23,6 @@ public class SplitText {
                     //gata cuvantul
                     //verific dictionar
                     //daca trebuie stocat
-                    WordStored wordStored = new WordStored(new File("files/stopwords.txt"), new File("files/exception.txt"));
                     if (wordStored.isStored(sb.toString())) {
                         if (wordCount.containsKey(sb.toString())) {
                             //incrementez valoarea
@@ -43,33 +41,5 @@ public class SplitText {
 
         wordCount.remove("");
         return wordCount;
-    }
-
-    public static JSONObject serializeHashMap(String fileName) throws IOException {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put(fileName, splitText(fileName));
-        return jsonObject;
-    }
-
-    public static File writeIndexToFile(String fileName) throws IOException {
-        JSONObject jsonObject = new JSONObject(splitText(fileName));
-        //File file=new File();
-        //file.createNewFile();
-        File myObj = new File("output/" + fileName);
-        myObj.getParentFile().mkdirs();
-
-        if (myObj.createNewFile()) {
-            System.out.println("File created: " + myObj.getName());
-            FileWriter fileWriter = new FileWriter(myObj);
-            fileWriter.write(jsonObject.toString());
-            fileWriter.close();
-        } else {
-            System.out.println("File already exists.");
-            FileWriter fileWriter = new FileWriter(myObj);
-            fileWriter.write(jsonObject.toString());
-            fileWriter.close();
-            return myObj;
-        }
-        return null;
     }
 }
