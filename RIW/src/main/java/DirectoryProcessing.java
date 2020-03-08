@@ -100,6 +100,8 @@ public class DirectoryProcessing {
         mapFile.createNewFile();
         PrintWriter printWriterMap = new PrintWriter(mapFile);
 
+        HashMap<String,List<String>> mapList=new HashMap<String, List<String>>();
+
         while (!directoryQueue.isEmpty()) {
             File dir = directoryQueue.remove();
             File[] files = dir.listFiles();
@@ -114,7 +116,7 @@ public class DirectoryProcessing {
                         HashMap<String, Integer> elements = mapElement.getValue();
                         String docName = mapElement.getKey();
                         for (HashMap.Entry<String, Integer> entry : elements.entrySet()) {
-                            System.out.println(entry.getKey() + " " + entry.getValue());
+                            //System.out.println(entry.getKey() + " " + entry.getValue());
                             String term = entry.getKey();
                             int value = entry.getValue();
                             if (!reverseIndex.containsKey(term)) {
@@ -126,11 +128,24 @@ public class DirectoryProcessing {
                                 docCounter.put(docName, value);
                                 reverseIndex.put(term, docCounter);
                             }
+                            if(mapList.containsKey(term)){
+                                mapList.get(term).add(d.toString());
+                            }
+                            else{
+                                mapList.put(term,new LinkedList<String>());
+                                mapList.get(term).add(d.toString());
+                            }
+                            //printWriterMap.println(term+" "+d.toString());
                         }
                         //System.out.println(mapElement.getKey() + " : " + elements);
                     }
                 }
             }
+        }
+
+        for(HashMap.Entry<String,List<String>> element : mapList.entrySet()){
+            System.out.println(element.getKey()+" "+element.getValue());
+            printWriterMap.println(element.getKey()+" "+element.getValue());
         }
         File reverseIndexFile = new File("output/reverseIndex/reverseIndex.txt");
         if (reverseIndexFile.exists()) {
