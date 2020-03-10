@@ -90,7 +90,9 @@ public class DirectoryProcessing {
 
     public void createReverseIndex() throws IOException {
 
-        HashMap<String, HashMap<String, Integer>> reverseIndex = new HashMap<String, HashMap<String, Integer>>();
+        TreeMap<String, HashMap<String, Integer>> reverseIndex = new TreeMap<>();
+
+//      HashMap<String, HashMap<String, Integer>> reverseIndex = new HashMap<String, HashMap<String, Integer>>();
 
         File mapFile = new File("output/mapfile/mapIndirect.txt");
         if (mapFile.exists()) {
@@ -99,8 +101,8 @@ public class DirectoryProcessing {
         mapFile.getParentFile().mkdirs();
         mapFile.createNewFile();
         PrintWriter printWriterMap = new PrintWriter(mapFile);
-
-        HashMap<String,List<String>> mapList=new HashMap<String, List<String>>();
+        //pt mapare index indirect
+        HashMap<String, List<String>> mapList = new HashMap<String, List<String>>();
 
         while (!directoryQueue.isEmpty()) {
             File dir = directoryQueue.remove();
@@ -128,11 +130,10 @@ public class DirectoryProcessing {
                                 docCounter.put(docName, value);
                                 reverseIndex.put(term, docCounter);
                             }
-                            if(mapList.containsKey(term)){
+                            if (mapList.containsKey(term)) {
                                 mapList.get(term).add(d.toString());
-                            }
-                            else{
-                                mapList.put(term,new LinkedList<String>());
+                            } else {
+                                mapList.put(term, new LinkedList<String>());
                                 mapList.get(term).add(d.toString());
                             }
                             //printWriterMap.println(term+" "+d.toString());
@@ -142,11 +143,13 @@ public class DirectoryProcessing {
                 }
             }
         }
-
-        for(HashMap.Entry<String,List<String>> element : mapList.entrySet()){
-            System.out.println(element.getKey()+" "+element.getValue());
-            printWriterMap.println(element.getKey()+" "+element.getValue());
+        int nr = 0;
+        for (HashMap.Entry<String, List<String>> element : mapList.entrySet()) {
+//            System.out.println(element.getKey()+" "+element.getValue());
+            nr++;
+            printWriterMap.println(element.getKey() + " " + element.getValue());
         }
+        //  System.out.println("Nr de key-> "+nr+" sau "+mapList.size());
         File reverseIndexFile = new File("output/reverseIndex/reverseIndex.txt");
         if (reverseIndexFile.exists()) {
             reverseIndexFile.delete();
@@ -154,18 +157,21 @@ public class DirectoryProcessing {
         reverseIndexFile.getParentFile().mkdirs();
         reverseIndexFile.createNewFile();
         PrintWriter printWriterReverseIndex = new PrintWriter(reverseIndexFile);
-//        System.out.println(reverseIndex.size());
+        nr = 0;
         for (HashMap.Entry<String, HashMap<String, Integer>> element : reverseIndex.entrySet()) {
             String term = element.getKey();
-            //   System.out.print(term+": ");
+            System.out.print(nr + " : " + term + ": ");
             printWriterReverseIndex.print(term + " ");
             for (HashMap.Entry<String, Integer> doc : element.getValue().entrySet()) {
-                //     System.out.print("{"+doc.getKey()+" "+doc.getValue()+"} " );
+                System.out.print("{" + doc.getKey() + " " + doc.getValue() + "} ");
                 printWriterReverseIndex.print("{" + doc.getKey() + " " + doc.getValue() + "} ");
             }
-            // System.out.println();
+            System.out.println();
             printWriterReverseIndex.println();
+            printWriterMap.flush();
+            nr++;
         }
+        printWriterReverseIndex.close();
         printWriterMap.close();
 //        System.out.println("Nr word="+nrWord+", nr date:" +nr);
     }
