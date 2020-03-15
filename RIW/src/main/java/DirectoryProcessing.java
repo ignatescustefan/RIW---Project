@@ -1,3 +1,7 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
+
 import java.io.*;
 import java.util.*;
 
@@ -143,37 +147,41 @@ public class DirectoryProcessing {
                 }
             }
         }
-        int nr = 0;
         for (HashMap.Entry<String, List<String>> element : mapList.entrySet()) {
-//            System.out.println(element.getKey()+" "+element.getValue());
-            nr++;
             printWriterMap.println(element.getKey() + " " + element.getValue());
         }
-        //  System.out.println("Nr de key-> "+nr+" sau "+mapList.size());
         File reverseIndexFile = new File("output/reverseIndex/reverseIndex.txt");
         if (reverseIndexFile.exists()) {
             reverseIndexFile.delete();
         }
         reverseIndexFile.getParentFile().mkdirs();
         reverseIndexFile.createNewFile();
+
         PrintWriter printWriterReverseIndex = new PrintWriter(reverseIndexFile);
-        nr = 0;
-        for (HashMap.Entry<String, HashMap<String, Integer>> element : reverseIndex.entrySet()) {
-            String term = element.getKey();
-            System.out.print(nr + " : " + term + ": ");
-            printWriterReverseIndex.print(term + " ");
-            for (HashMap.Entry<String, Integer> doc : element.getValue().entrySet()) {
-                System.out.print("{" + doc.getKey() + " " + doc.getValue() + "} ");
-                printWriterReverseIndex.print("{" + doc.getKey() + " " + doc.getValue() + "} ");
-            }
-            System.out.println();
-            printWriterReverseIndex.println();
-            printWriterMap.flush();
-            nr++;
-        }
+        Gson gsonBuilder=new GsonBuilder().setPrettyPrinting().create();
+        printWriterReverseIndex.println(gsonBuilder.toJson(reverseIndex));
         printWriterReverseIndex.close();
         printWriterMap.close();
-//        System.out.println("Nr word="+nrWord+", nr date:" +nr);
     }
-
+    public TreeMap<String,HashMap<String,Integer>> loadReverseIndex(String fileName) throws IOException{
+        TreeMap<String,HashMap<String,Integer>> reverseIndex=new TreeMap<>();
+        //reader
+        JsonReader jsonReader=new JsonReader(new InputStreamReader(new FileInputStream(fileName)));
+        jsonReader.beginObject();
+        while (jsonReader.hasNext()){
+            //e cuvant
+            String word=jsonReader.nextName();
+            HashMap<String,Integer> hashMapCurrentWord=new HashMap<>();
+            //citesc urmatorul obiect
+            jsonReader.beginObject();
+            while (jsonReader.hasNext()){
+                hashMapCurrentWord.put(jsonReader.nextName(),jsonReader.nextInt());
+            }
+            jsonReader.endObject();
+            reverseIndex.put(word,hashMapCurrentWord);
+        }
+        jsonReader.endObject();
+        return reverseIndex;
+    }
 }
+

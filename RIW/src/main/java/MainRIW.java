@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.TreeMap;
 
 public class MainRIW {
 
@@ -27,6 +29,8 @@ public class MainRIW {
     public static void Lab03() throws IOException {
         DirectoryProcessing directoryProcessing = new DirectoryProcessing(new File("output/files/dateIntrare"));
         directoryProcessing.createReverseIndex();
+        TreeMap<String, HashMap<String, Integer>> treeMap=directoryProcessing.loadReverseIndex("output/reverseIndex/reverseIndex.txt");
+        System.out.println(treeMap.size());
     }
 
 
