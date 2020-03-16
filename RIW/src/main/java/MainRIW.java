@@ -22,23 +22,31 @@ public class MainRIW {
     }
 
     public static void Lab02() throws IOException {
-        DirectoryProcessing directoryProcessing = new DirectoryProcessing(new File("files/dateIntrare"));
+        DirectoryProcessing directoryProcessing = new DirectoryProcessing(new File("files/dateIntrare01"));
         directoryProcessing.createDirectIndex();
     }
 
     public static void Lab03() throws IOException {
-        DirectoryProcessing directoryProcessing = new DirectoryProcessing(new File("output/files/dateIntrare"));
+        DirectoryProcessing directoryProcessing = new DirectoryProcessing(new File("output/files/dateIntrare01"));
         directoryProcessing.createReverseIndex();
-        TreeMap<String, HashMap<String, Integer>> treeMap=directoryProcessing.loadReverseIndex("output/reverseIndex/reverseIndex.txt");
+        TreeMap<String, HashMap<String, Integer>> treeMap= DirectoryProcessing.loadReverseIndex("output/reverseIndex/reverseIndex.txt");
         System.out.println(treeMap.size());
     }
 
+    public static void Lab04() throws IOException{
+        TreeMap<String, HashMap<String, Integer>> reverseIndex= DirectoryProcessing.loadReverseIndex("output/reverseIndex/reverseIndex.txt");
+
+        BooleanSearch booleanSearch=new BooleanSearch(reverseIndex);
+        booleanSearch.spitQuery("ana are mere");
+        System.out.println(booleanSearch.generalOperation("ana+are+Maria"));
+    }
 
     public static void main(String[] args) throws IOException {
         //Lab01();
         // System.out.println(map);
         //SplitText.writeIndexToFile("files/file.txt");
-        Lab02();
-        Lab03();
+        //Lab02();
+        //Lab03();
+        Lab04();
     }
 }

@@ -17,7 +17,7 @@ public class DirectoryProcessing {
 
     }
 
-    public HashMap<String, HashMap<String, Integer>> parseFile(String fileName) throws IOException {
+    public static HashMap<String, HashMap<String, Integer>> parseFile(String fileName) throws IOException {
         FileReader fileReader = new FileReader(fileName);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         String line = bufferedReader.readLine();
@@ -163,7 +163,7 @@ public class DirectoryProcessing {
         printWriterReverseIndex.close();
         printWriterMap.close();
     }
-    public TreeMap<String,HashMap<String,Integer>> loadReverseIndex(String fileName) throws IOException{
+    public static TreeMap<String,HashMap<String,Integer>> loadReverseIndex(String fileName) throws IOException{
         TreeMap<String,HashMap<String,Integer>> reverseIndex=new TreeMap<>();
         //reader
         JsonReader jsonReader=new JsonReader(new InputStreamReader(new FileInputStream(fileName)));

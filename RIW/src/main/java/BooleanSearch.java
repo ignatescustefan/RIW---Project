@@ -1,39 +1,48 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 public class BooleanSearch {
 
     private TreeMap<String, HashMap<String, Integer>> reverseIndex;
+    private Queue<String> terms;
+    private Queue<Character> operation;
+    private WordStored wordStored = new WordStored(new File("files/stopwords.txt"), new File("files/exception.txt"));
 
-    public BooleanSearch(TreeMap<String, HashMap<String, Integer>> reverseIndex) {
+    public BooleanSearch(TreeMap<String, HashMap<String, Integer>> reverseIndex) throws FileNotFoundException {
         this.reverseIndex = reverseIndex;
+        terms=new LinkedList<>();
+        operation=new LinkedList<>();
     }
 
     private Set<String> getEntryForKey(String key) {
-        return reverseIndex.get(key).keySet();
+        if(reverseIndex.containsKey(key))
+            return reverseIndex.get(key).keySet();
+        return new HashSet<>();
     }
 
-    public Set<String> orOperation(String firstKey, String secondKey) {
-        Set<String> firstKeySet = getEntryForKey(firstKey);
-        Set<String> secondKeySet = getEntryForKey(secondKey);
+    public Set<String> orOperation(Set<String> firstKeySet,Set<String> secondKeySet ) {
         int nrFirstKeySet = firstKeySet.size();
         int nrSecondKeySet = secondKeySet.size();
 
         if (nrFirstKeySet < nrSecondKeySet) {
-            for (String doc : firstKeySet) {
-                secondKeySet.add(doc);
+            for(String entry:firstKeySet){
+                if(!secondKeySet.contains(entry)){
+                    secondKeySet.add(entry);
+                }
             }
             return secondKeySet;
         } else {
-            for (String doc : secondKeySet) {
-                firstKeySet.add(doc);
+            for(String entry:secondKeySet){
+                if(!firstKeySet.contains(entry)){
+                    firstKeySet.add(entry);
+                }
             }
             return firstKeySet;
         }
     }
 
-    public Set<String> andOperation(String firstKey, String secondKey) {
-        Set<String> firstKeySet = getEntryForKey(firstKey);
-        Set<String> secondKeySet = getEntryForKey(secondKey);
+    public Set<String> andOperation(Set<String> firstKeySet,Set<String> secondKeySet ){
         int nrFirstKeySet = firstKeySet.size();
         int nrSecondKeySet = secondKeySet.size();
         if (nrFirstKeySet < nrSecondKeySet) {
@@ -45,9 +54,7 @@ public class BooleanSearch {
         }
     }
 
-    public Set<String> notOperation(String firstKey, String secondKey) {
-        Set<String> firstKeySet = getEntryForKey(firstKey);
-        Set<String> secondKeySet = getEntryForKey(secondKey);
+    public Set<String> notOperation(Set<String> firstKeySet,Set<String> secondKeySet ) {
         Set<String> result = new HashSet<>();
         for (String doc : firstKeySet) {
             if (!secondKeySet.contains(doc)) {
@@ -58,48 +65,54 @@ public class BooleanSearch {
     }
 
     public void spitQuery(String query){
-        Queue<String> terms=new LinkedList<>();
-        Queue<String> operation=new LinkedList<>();
-
+        terms.clear();
+        operation.clear();
+        StringBuilder sb=new StringBuilder();
         for(int i=0;i<query.length();i++){
-            if (query.charAt(i)==' '){
-
+            if(Character.isLetterOrDigit(query.charAt(i))){
+                sb.append(query.charAt(i));
+            }else {
+                if(wordStored.isStored(sb.toString())){
+                    operation.add(query.charAt(i));
+                    terms.add(sb.toString());
+                }
+                sb.setLength(0);
             }
         }
+        terms.add(sb.toString());
+        System.out.println(terms+" "+ operation);
     }
 
-    public Set<String> generalOperation(Queue<String> terms, Queue<String> operation) {
+
+    public Set<String> generalOperation(String query) {
+        spitQuery(query);
         Set<String> result = null;
-        String first;
-        String second;
-        String op;
-        while (!terms.isEmpty()) {
-            if (null == result) {
-                first = terms.remove();
-                second = terms.remove();
-                op=operation.remove();
-                result = switchOverOperation(result, first, second, op);
-            } else {
-                first = terms.remove();
+        try{
+            result=getEntryForKey(terms.remove());
+            while(!terms.isEmpty() && !operation.isEmpty()){
+                String term=terms.remove();
+                Character operator=operation.remove();
+                Set<String> currentSet=getEntryForKey(term);
+                result=switchOverOperation(result,currentSet,operator);
             }
-
+        }catch (NullPointerException e){
+            e.printStackTrace();
+            return null;
         }
         return result;
     }
 
-    private Set<String> switchOverOperation(Set<String> result, String first, String second, String op) {
-        switch (op) {
-            case "and":
-                result=andOperation(first,second);
-                break;
-            case "or":
-                result=orOperation(first,second);
-                break;
-            case "not":
-                result=notOperation(first,second);
-                break;
+    public Set<String> switchOverOperation(Set<String> firstSet, Set<String> secondSet, Character op) {
+
+           switch (op) {
+            case '+':
+                return andOperation(firstSet,secondSet);
+            case ' ':
+                return orOperation(firstSet,secondSet);
+            case '~':
+                return notOperation(firstSet,secondSet);
             default:
+                return null;
         }
-        return result;
     }
 }
