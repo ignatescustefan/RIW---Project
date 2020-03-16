@@ -36,7 +36,6 @@ public class PageInfo {
     }
 
     public String getKeywords() {
-        //var content=document.select()
         Elements elements = document.select("meta[name=keywords]");
         if (elements.size() == 0) {
             return "";

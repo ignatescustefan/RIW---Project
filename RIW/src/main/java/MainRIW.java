@@ -15,25 +15,22 @@ public class MainRIW {
         PageInfo pageInfo1 = new PageInfo(file);
         System.out.println(pageInfo1.getRobots());
         System.out.println(pageInfo1.getLinks());
-        System.out.println(SplitText.splitText("files/file.txt"));
+        System.out.println(TextSplitter.createDirectIndexFromFile("files/file.txt"));
 
     }
 
     public static void Lab02() throws IOException {
-        DirectoryProcessing directoryProcessing = new DirectoryProcessing(new File("files/dateIntrare"));
+        DirectoryProcessor directoryProcessing = new DirectoryProcessor(new File("files/inputs"));
         directoryProcessing.createDirectIndex();
     }
 
     public static void Lab03() throws IOException {
-        DirectoryProcessing directoryProcessing = new DirectoryProcessing(new File("output/files/dateIntrare"));
+        DirectoryProcessor directoryProcessing = new DirectoryProcessor(new File("output/files/inputs"));
         directoryProcessing.createReverseIndex();
     }
 
 
     public static void main(String[] args) throws IOException {
-        //Lab01();
-        // System.out.println(map);
-        //SplitText.writeIndexToFile("files/file.txt");
         Lab02();
         Lab03();
     }
