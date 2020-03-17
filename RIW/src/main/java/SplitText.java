@@ -26,9 +26,9 @@ public class SplitText {
                     if (wordStored.isStored(sb.toString())) {
                         if (wordCount.containsKey(sb.toString())) {
                             //incrementez valoarea
-                            wordCount.put(sb.toString(), wordCount.get(sb.toString()) + 1);
+                            wordCount.put(sb.toString().toLowerCase(), wordCount.get(sb.toString()) + 1);
                         } else {
-                            wordCount.put(sb.toString(), 1);
+                            wordCount.put(sb.toString().toLowerCase(), 1);
                         }
                     }
                     //resetez cuvantul;
