@@ -2,7 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-public class BooleanSearch {
+public class BooleanSearch implements Search{
 
     private TreeMap<String, HashMap<String, Integer>> reverseIndex;
     private Queue<String> terms;
@@ -86,7 +86,8 @@ public class BooleanSearch {
     }
 
 
-    public Set<String> generalOperation(String query) {
+    @Override
+    public Set<String> generalSearch(String query) {
         spitQuery(query);
         Set<String> result = null;
         try {

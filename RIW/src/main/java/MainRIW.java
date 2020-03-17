@@ -35,8 +35,8 @@ public class MainRIW {
 
     public static void Lab04() throws IOException{
         TreeMap<String, HashMap<String, Integer>> reverseIndex= DirectoryProcessing.loadReverseIndex("output/reverseIndex/reverseIndex.txt");
-        BooleanSearch booleanSearch=new BooleanSearch(reverseIndex);
-        System.out.println(booleanSearch.generalOperation("Ruby PHP~C"));
+        Search booleanSearch=new BooleanSearch(reverseIndex);
+        System.out.println(booleanSearch.generalSearch("Ruby PHP C"));
     }
 
     public static void main(String[] args) throws IOException {
