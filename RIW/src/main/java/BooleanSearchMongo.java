@@ -1,21 +1,52 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 
-public class BooleanSearch implements Search {
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-    private TreeMap<String, HashMap<String, Integer>> reverseIndex;
+public class BooleanSearchMongo implements Search {
+
+    private String reverseDatabase;
     private QuerySpliter querySpliter;
+    private MongoClient client;
+    private MongoDatabase mongoDatabase;
+    private MongoCollection<Document> collection;
 
-    public BooleanSearch(TreeMap<String, HashMap<String, Integer>> reverseIndex) {
-        this.reverseIndex = reverseIndex;
+    public BooleanSearchMongo(String reverseDatabase) {
+        this.client = new MongoClient("localhost", 27017);
+        this.reverseDatabase = reverseDatabase;
+        this.mongoDatabase = client.getDatabase(reverseDatabase);
+        this.collection = mongoDatabase.getCollection("reverseIndex");
         this.querySpliter = new QuerySpliter();
     }
 
     private Set<String> getEntryForKey(String key) {
-        if (reverseIndex.containsKey(key))
-            return new HashSet<>(reverseIndex.get(key).keySet());
-        return new HashSet<>();
+        //search
+        Set<String> entrySet = new HashSet<>();
+        BasicDBObject inQuery = new BasicDBObject();
+        BasicDBObject projectField = new BasicDBObject();//{_id:0,term:0,"docs.count":0})
+        inQuery.put("term", key);
+        projectField.put("_id", 0);
+        projectField.put("term", 0);
+        projectField.put("docs.count", 0);
+        ArrayList<Document> iterable = collection.find(inQuery).projection(projectField).into(new ArrayList<>());
+
+        if (iterable.iterator().hasNext()) {
+            Document document = iterable.get(0);
+            List<Document> list = (List<Document>) document.get("docs");
+
+            for (Document file : list) {
+                //System.out.println(file);
+                entrySet.add(file.getString("file"));
+            }
+            //   System.out.println(document.get("docs"));
+        }
+        return entrySet;
     }
 
     public Set<String> orOperation(Set<String> firstKeySet, Set<String> secondKeySet) {

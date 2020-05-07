@@ -10,10 +10,10 @@ public class WordStored {
     private List<String> exceptionList;
     private List<String> stopWordsList;
 
-    public WordStored(File stopFile, File exception) throws FileNotFoundException {
-        stopwordsFile = stopFile;
+    public WordStored() throws FileNotFoundException {
+        stopwordsFile = new File("files/stopwords.txt");
         stopWordsList = new LinkedList<String>();
-        exceptionFile = exception;
+        exceptionFile = new File("files/exception.txt");
         exceptionList = new LinkedList<String>();
         readInputs();
     }
@@ -31,13 +31,18 @@ public class WordStored {
         //System.out.println(exceptionList);
     }
 
-    public boolean isStored(String word) {
+    //return baseform or exception
+    public String isStored(String word) {
         if (exceptionList.contains(word.toLowerCase())) {
-            return true;
+            return word.toLowerCase();
         } else if (!stopWordsList.contains(word.toLowerCase())) {
             //string getBaseFrom()
-            return true;
+            Stemmer s = new Stemmer();
+            s.add(word.toLowerCase().toLowerCase().toCharArray(), word.length());
+            s.stem();
+            String baseForm = s.toString();
+            return baseForm;
         }
-        return false;
+        return null;
     }
 }

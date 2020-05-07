@@ -9,13 +9,53 @@ public class DirectoryProcessing {
     private Queue<File> directoryQueue;
     private File initiaDirectory;
 
-
     public DirectoryProcessing(File dir) {
         directoryQueue = new LinkedList<File>();
         initiaDirectory = dir;
         directoryQueue.add(initiaDirectory);
-
     }
+
+    public List<File> exploreDirectory() {
+        List<File> fileList = new ArrayList<>();
+        while (!directoryQueue.isEmpty()) {
+            File directory = directoryQueue.remove();
+            File[] content = directory.listFiles();
+            for (File file : content) {
+                if (file.isDirectory()) {
+                    directoryQueue.add(file);
+                } else {
+                    fileList.add(file);
+                }
+            }
+        }
+        return fileList;
+    }
+
+    public HashMap<String, List<String>> exploreDirectoryForMoreParallelization() {
+        HashMap<String, List<String>> listHashMap = new HashMap<>();
+        directoryQueue.clear();
+        directoryQueue.add(initiaDirectory);
+        while (!directoryQueue.isEmpty()) {
+            File directory = directoryQueue.remove();
+            File[] content = directory.listFiles();
+            for (File file : content) {
+                if (file.isDirectory()) {
+                    directoryQueue.add(file);
+                } else {
+                    //e fisier
+                    if (listHashMap.containsKey(file.getParent())) {
+                        listHashMap.get(file.getParent()).add(file.toString());
+                    } else {
+                        List<String> list = new LinkedList<>();
+                        list.add(file.toString());
+                        listHashMap.put(file.getParent(), list);
+                    }
+                }
+            }
+        }
+        return listHashMap;
+    }
+
 
     public static HashMap<String, HashMap<String, Integer>> parseFile(String fileName) throws IOException {
         FileReader fileReader = new FileReader(fileName);
@@ -75,7 +115,7 @@ public class DirectoryProcessing {
                 if (d.isFile()) {
                     printWriter.println(d.toString());
                     System.out.println("Se proceseaza fisierul: " + d.toString());
-                    HashMap<String, Integer> hashMap = SplitText.splitText(d.toString());
+                    HashMap<String, Integer> hashMap = DirectIndex.createDirectIndex(d.toString());
 
                     for (String key : hashMap.keySet()) {
                         printWriter.println(key + " " + hashMap.get(key));
@@ -116,6 +156,7 @@ public class DirectoryProcessing {
                     directoryQueue.add(d);
                 } else {
                     //process file
+
                     HashMap<String, HashMap<String, Integer>> mapHashMap = parseFile(d.toString());
 
                     for (Map.Entry<String, HashMap<String, Integer>> mapElement : mapHashMap.entrySet()) {
@@ -134,11 +175,13 @@ public class DirectoryProcessing {
                                 docCounter.put(docName, value);
                                 reverseIndex.put(term, docCounter);
                             }
-                            if (mapList.containsKey(term)) {
-                                mapList.get(term).add(d.toString());
-                            } else {
+                            if (!mapList.containsKey(term)) {
                                 mapList.put(term, new LinkedList<String>());
                                 mapList.get(term).add(d.toString());
+                            } else {
+                                if (!mapList.get(term).contains(d.toString())) {
+                                    mapList.get(term).add(d.toString());
+                                }
                             }
                             //printWriterMap.println(term+" "+d.toString());
                         }
@@ -158,27 +201,28 @@ public class DirectoryProcessing {
         reverseIndexFile.createNewFile();
 
         PrintWriter printWriterReverseIndex = new PrintWriter(reverseIndexFile);
-        Gson gsonBuilder=new GsonBuilder().setPrettyPrinting().create();
+        Gson gsonBuilder = new GsonBuilder().setPrettyPrinting().create();
         printWriterReverseIndex.println(gsonBuilder.toJson(reverseIndex));
         printWriterReverseIndex.close();
         printWriterMap.close();
     }
-    public static TreeMap<String,HashMap<String,Integer>> loadReverseIndex(String fileName) throws IOException{
-        TreeMap<String,HashMap<String,Integer>> reverseIndex=new TreeMap<>();
+
+    public static TreeMap<String, HashMap<String, Integer>> loadReverseIndex(String fileName) throws IOException {
+        TreeMap<String, HashMap<String, Integer>> reverseIndex = new TreeMap<>();
         //reader
-        JsonReader jsonReader=new JsonReader(new InputStreamReader(new FileInputStream(fileName)));
+        JsonReader jsonReader = new JsonReader(new InputStreamReader(new FileInputStream(fileName)));
         jsonReader.beginObject();
-        while (jsonReader.hasNext()){
+        while (jsonReader.hasNext()) {
             //e cuvant
-            String word=jsonReader.nextName();
-            HashMap<String,Integer> hashMapCurrentWord=new HashMap<>();
+            String word = jsonReader.nextName();
+            HashMap<String, Integer> hashMapCurrentWord = new HashMap<>();
             //citesc urmatorul obiect
             jsonReader.beginObject();
-            while (jsonReader.hasNext()){
-                hashMapCurrentWord.put(jsonReader.nextName(),jsonReader.nextInt());
+            while (jsonReader.hasNext()) {
+                hashMapCurrentWord.put(jsonReader.nextName(), jsonReader.nextInt());
             }
             jsonReader.endObject();
-            reverseIndex.put(word,hashMapCurrentWord);
+            reverseIndex.put(word, hashMapCurrentWord);
         }
         jsonReader.endObject();
         return reverseIndex;

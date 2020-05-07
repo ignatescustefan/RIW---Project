@@ -32,11 +32,12 @@ public class PageInfo {
     }
 
     public String getTitle() {
-        return document.title();
+        return (document != null) ? document.title() : "";
     }
 
     public String getKeywords() {
         //var content=document.select()
+        if (document == null) return "";
         Elements elements = document.select("meta[name=keywords]");
         if (elements.size() == 0) {
             return "";
@@ -45,10 +46,16 @@ public class PageInfo {
     }
 
     public String getDescription() {
-        return document.select("meta[name=description]").first().attr("content");
+        if (document == null) return "";
+        Elements elements = document.select("meta[name=description]");
+        if (elements.size() == 0) {
+            return "";
+        }
+        return elements.first().attr("content");
     }
 
     public String getRobots() {
+        if (document == null) return "";
         Elements elements = document.select("meta[name=robots]");
         if (elements.size() == 0) {
             return "";
@@ -58,6 +65,7 @@ public class PageInfo {
 
     public List<String> getLinks() {
         List<String> list = new LinkedList<String>();
+        if (document == null) return list;
         Elements links = document.select("a");
         for (Element e : links) {
             String link = e.attr("abs:href");
@@ -72,6 +80,6 @@ public class PageInfo {
     }
 
     public String getText() {
-        return document.body().text();
+        return (document != null) ? document.body().text() : "";
     }
 }
